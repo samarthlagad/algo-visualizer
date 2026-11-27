@@ -8,7 +8,8 @@ import {
   getDeleteValueSteps,
   getDeleteAtSteps,
   getSearchSteps,
-} from '../algorithms/linkedList';
+  getTraverseSteps,
+} from '../dataStructures/linkedList';
 import { complexity } from '../data/complexity';
 import { usePlayer } from '../hooks/usePlayer';
 import LinkedListView from '../components/LinkedListView';
@@ -16,9 +17,20 @@ import PlayerControls from '../components/PlayerControls';
 import ComplexityPanel from '../components/ComplexityPanel';
 import Button from '../components/Button';
 
-function LinkedListVisualizer({ steps, speed, setSpeed }) {
-  const player = usePlayer(steps, speed);
-  const currentStep = steps[player.step] ?? steps[0];
+function LinkedListVisualizer({ steps }) {
+  const {
+    index,
+    isPlaying,
+    delay,
+    setDelay,
+    play,
+    pause,
+    next,
+    prev,
+    reset,
+  } = usePlayer(steps.length);
+
+  const currentStep = steps[index] ?? steps[0];
 
   return (
     <div className="space-y-4">
@@ -33,10 +45,16 @@ function LinkedListVisualizer({ steps, speed, setSpeed }) {
       <LinkedListView step={currentStep} />
 
       <PlayerControls
-        player={player}
+        isPlaying={isPlaying}
+        onPlay={play}
+        onPause={pause}
+        onNext={next}
+        onPrev={prev}
+        onReset={reset}
+        delay={delay}
+        onDelayChange={setDelay}
+        currentStep={index + 1}
         totalSteps={steps.length}
-        speed={speed}
-        setSpeed={setSpeed}
       />
     </div>
   );
@@ -46,7 +64,6 @@ export default function LinkedListPage() {
   const [operation, setOperation] = useState('insertTail');
   const [valueInput, setValueInput] = useState('42');
   const [indexInput, setIndexInput] = useState('1');
-  const [speed, setSpeed] = useState(450);
 
   const [session, setSession] = useState(() => {
     const initialHead = fromArray([10, 25, 37]);
@@ -97,6 +114,9 @@ export default function LinkedListPage() {
         break;
       case 'search':
         generatedSteps = getSearchSteps(session.head, val);
+        break;
+      case 'traverse':
+        generatedSteps = getTraverseSteps(session.head);
         break;
       default:
         return;
@@ -184,6 +204,7 @@ export default function LinkedListPage() {
           <option value="deleteValue">Delete by Value — O(n)</option>
           <option value="deleteAt">Delete at Index — O(n)</option>
           <option value="search">Search Value — O(n)</option>
+          <option value="traverse">Traverse List — O(n)</option>
         </select>
 
         {needsIndex && (
@@ -211,7 +232,7 @@ export default function LinkedListPage() {
         )}
 
         <Button type="submit" variant="primary">
-          Run Traversal
+          Run Operation
         </Button>
       </form>
 
@@ -219,8 +240,6 @@ export default function LinkedListPage() {
       <LinkedListVisualizer
         key={session.runId}
         steps={session.steps}
-        speed={speed}
-        setSpeed={setSpeed}
       />
 
       <ComplexityPanel info={complexity.linkedList} />

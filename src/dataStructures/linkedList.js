@@ -423,4 +423,46 @@ export function getSearchSteps(head, value) {
     })
   );
   return steps;
+  
+}
+// 7. Full Traversal — O(n)
+export function getTraverseSteps(head) {
+  if (!head) {
+    return [
+      makeStep(head, {
+        message: 'List is empty (HEAD → NULL): nothing to traverse.',
+        error: true,
+        done: true,
+      }),
+    ];
+  }
+
+  const visited = [];
+  const steps = [];
+  let curr = head;
+  let idx = 0;
+
+  while (curr !== null) {
+    visited.push(curr.value);
+    const hasNext = curr.next !== null;
+    steps.push(
+      makeStep(head, {
+        current: idx,
+        message: hasNext
+          ? `Visiting index ${idx} (${curr.value}) → following next pointer to ${curr.next.value}.`
+          : `Visiting tail at index ${idx} (${curr.value}) → next is NULL.`,
+      })
+    );
+    curr = curr.next;
+    idx++;
+  }
+
+  steps.push(
+    makeStep(head, {
+      message: `Traversal complete (${visited.length} nodes): ${visited.join(' → ')} → NULL.`,
+      done: true,
+    })
+  );
+
+  return steps;
 }

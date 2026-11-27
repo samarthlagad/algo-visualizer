@@ -96,9 +96,9 @@ export const complexity = {
       { name: 'Insert Head', complexity: 'O(1)' },
       { name: 'Insert Tail', complexity: 'O(n)' },
       { name: 'Insert / Delete (i)', complexity: 'O(n)' },
-      { name: 'Search', complexity: 'O(n)' },
+      { name: 'Search / Traverse', complexity: 'O(n)' },
     ],
     description:
-      'Nodes store a value and a next reference instead of contiguous memory. Prepending at HEAD is O(1), while inserting at tail (without a tail pointer), searching, or deleting requires O(n) pointer traversal.',
+      'Nodes store a value and a next reference instead of contiguous memory. Prepending at HEAD is O(1), while inserting at tail (without a tail pointer), searching, traversing, or deleting requires O(n) pointer traversal.',
   },
 };
