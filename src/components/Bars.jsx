@@ -1,18 +1,35 @@
 function getColor(i, step) {
-  if (step.comparing.includes(i)) {
-    return step.swapped ? 'bg-red-500' : 'bg-yellow-400';
+  if (Array.isArray(step.swapped) && step.swapped.includes(i)) {
+    return "bg-red-500";
   }
-  if (i >= step.sortedFrom) {
-    return 'bg-green-500';
+  if (step.swapped === true && step.comparing?.includes(i)) {
+    return "bg-red-500";
   }
-  return 'bg-slate-500';
+
+  if (step.comparing?.includes(i)) {
+    return "bg-yellow-400";
+  }
+
+  if (Array.isArray(step.sorted) && step.sorted.includes(i)) {
+    return "bg-green-500";
+  }
+
+  if (typeof step.sortedFrom === "number" && i >= step.sortedFrom) {
+    return "bg-green-500";
+  }
+
+  if (step.range && i >= step.range[0] && i <= step.range[1]) {
+    return "bg-sky-300";
+  }
+
+  return "bg-slate-500";
 }
 
 export default function Bars({ step }) {
   if (!step) return null;
 
   const max = Math.max(...step.array, 1);
-  const gapClass = step.array.length > 25 ? 'gap-px' : 'gap-1';
+  const gapClass = step.array.length > 25 ? "gap-px" : "gap-1";
 
   return (
     <div
