@@ -2,6 +2,7 @@ import { useState } from 'react';
 import SortingPage from './pages/SortingPage';
 import SearchPage from './pages/SearchPage';
 import DataStructuresPage from './pages/DataStructuresPage';
+import LinkedListPage from './pages/LinkedListPage';
 
 export default function App() {
   const [tab, setTab] = useState('sorting');
@@ -10,6 +11,7 @@ export default function App() {
     { id: 'sorting', label: 'Sorting' },
     { id: 'searching', label: 'Searching' },
     { id: 'structures', label: 'Stack & Queue' },
+    { id: 'linkedList', label: 'Linked List' },
   ];
 
   return (
@@ -35,6 +37,7 @@ export default function App() {
         {tab === 'sorting' && <SortingPage />}
         {tab === 'searching' && <SearchPage />}
         {tab === 'structures' && <DataStructuresPage />}
+        {tab === 'linkedList' && <LinkedListPage />}
       </div>
     </div>
   );

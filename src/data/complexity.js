@@ -89,4 +89,16 @@ export const complexity = {
     description:
       'A First-In, First-Out (FIFO) collection where new elements enter at the rear and leave from the front. *Note: JS Array.shift() / slice(1) is O(n) because remaining items shift; a circular buffer or head pointer achieves true O(1) dequeue.',
   },
+  linkedList: {
+    name: 'Singly Linked List',
+    space: 'O(n)',
+    operations: [
+      { name: 'Insert Head', complexity: 'O(1)' },
+      { name: 'Insert Tail', complexity: 'O(n)' },
+      { name: 'Insert / Delete (i)', complexity: 'O(n)' },
+      { name: 'Search', complexity: 'O(n)' },
+    ],
+    description:
+      'Nodes store a value and a next reference instead of contiguous memory. Prepending at HEAD is O(1), while inserting at tail (without a tail pointer), searching, or deleting requires O(n) pointer traversal.',
+  },
 };
