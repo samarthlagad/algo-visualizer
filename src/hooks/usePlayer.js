@@ -22,13 +22,11 @@ export function usePlayer(totalSteps) {
   }, []);
 
   const togglePlay = useCallback(() => {
-    setIsPlaying((playing) => {
-      if (!playing && index >= lastIndex) {
-        setIndex(0);
-      }
-      return !playing;
-    });
-  }, [index, lastIndex]);
+    if (!isPlaying && index >= lastIndex) {
+      setIndex(0);
+    }
+    setIsPlaying((playing) => !playing);
+  }, [isPlaying, index, lastIndex]);
 
   // Playback interval effect
   useEffect(() => {
