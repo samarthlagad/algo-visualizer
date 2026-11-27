@@ -15,12 +15,13 @@
 
 ---
 
+<!--
 ## 🖼️ Preview
 
 > **Tip:** Capture a screenshot of your **Linked List** or **Sorting** tab, save it to `public/screenshot.png`, and it will render automatically below.
 
 ![AlgoVisualizer Preview](./public/screenshot.png)
-
+-->
 ---
 
 ## ✨ Features
