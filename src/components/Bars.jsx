@@ -10,6 +10,10 @@ function getColor(i, step) {
     return 'bg-yellow-400';
   }
 
+  if (step.pivot === i) {
+    return 'bg-purple-500';
+  }
+
   if (Array.isArray(step.sorted) && step.sorted.includes(i)) {
     return 'bg-green-500';
   }
@@ -34,6 +38,9 @@ export default function Bars({ step }) {
   const max = Math.max(...step.array, 1);
   const gapClass = step.array.length > 25 ? 'gap-px' : 'gap-1';
   const hasRange = step.range?.[0] !== undefined;
+  const labelPrefix = step.pivot !== null && step.pivot !== undefined
+    ? 'Partitioning indices'
+    : 'Merging indices';
 
   return (
     <div className="w-full">
@@ -51,7 +58,7 @@ export default function Bars({ step }) {
       </div>
 
       <p className="mt-2 h-5 text-center text-sm text-slate-400">
-        {hasRange ? `Merging indices ${step.range[0]} to ${step.range[1]}` : ''}
+        {hasRange ? `${labelPrefix} ${step.range[0]} to ${step.range[1]}` : ''}
       </p>
     </div>
   );
