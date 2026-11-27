@@ -67,4 +67,26 @@ export const complexity = {
     description:
       'Repeatedly inspects the middle element of a sorted array and discards the half where the target cannot lie. Cuts the remaining search space in half on every comparison, requiring at most ⌊log₂(n)⌋ + 1 checks.',
   },
+  stack: {
+    name: 'Stack (LIFO)',
+    space: 'O(n)',
+    operations: [
+      { name: 'Push', complexity: 'O(1)' },
+      { name: 'Pop', complexity: 'O(1)' },
+      { name: 'Peek', complexity: 'O(1)' },
+    ],
+    description:
+      'A Last-In, First-Out (LIFO) collection where elements are added and removed from the same end (the top). Backed by a dynamic array, pushing, popping, and peeking at the top all run in O(1) time.',
+  },
+  queue: {
+    name: 'Queue (FIFO)',
+    space: 'O(n)',
+    operations: [
+      { name: 'Enqueue', complexity: 'O(1)' },
+      { name: 'Dequeue', complexity: 'O(1)*' },
+      { name: 'Front', complexity: 'O(1)' },
+    ],
+    description:
+      'A First-In, First-Out (FIFO) collection where new elements enter at the rear and leave from the front. *Note: JS Array.shift() / slice(1) is O(n) because remaining items shift; a circular buffer or head pointer achieves true O(1) dequeue.',
+  },
 };

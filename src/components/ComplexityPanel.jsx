@@ -1,12 +1,20 @@
 export default function ComplexityPanel({ info }) {
   if (!info) return null;
 
-  const metrics = [
-    { label: 'Best', value: info.best },
-    { label: 'Average', value: info.average },
-    { label: 'Worst', value: info.worst },
-    { label: 'Space', value: info.space },
-  ].filter((m) => m.value !== undefined);
+  const metrics = info.operations
+    ? [
+        ...info.operations.map((op) => ({
+          label: op.name,
+          value: op.complexity,
+        })),
+        ...(info.space ? [{ label: 'Space', value: info.space }] : []),
+      ]
+    : [
+        { label: 'Best', value: info.best },
+        { label: 'Average', value: info.average },
+        { label: 'Worst', value: info.worst },
+        { label: 'Space', value: info.space },
+      ].filter((m) => m.value !== undefined);
 
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-900 p-4 text-slate-200">
