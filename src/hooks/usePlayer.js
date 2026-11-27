@@ -8,7 +8,13 @@ export function usePlayer(totalSteps) {
   const lastIndex = Math.max(0, totalSteps - 1);
 
   const next = useCallback(() => {
-    setIndex((i) => Math.min(i + 1, lastIndex));
+    setIndex((i) => {
+      const nextIdx = Math.min(i + 1, lastIndex);
+      if (nextIdx >= lastIndex) {
+        setIsPlaying(false);
+      }
+      return nextIdx;
+    });
   }, [lastIndex]);
 
   const prev = useCallback(() => {
@@ -22,29 +28,34 @@ export function usePlayer(totalSteps) {
   }, []);
 
   const togglePlay = useCallback(() => {
+    if (lastIndex === 0) return;
+
     if (!isPlaying && index >= lastIndex) {
       setIndex(0);
+      setIsPlaying(true);
+      return;
     }
+
     setIsPlaying((playing) => !playing);
   }, [isPlaying, index, lastIndex]);
 
-  // Playback interval effect
+  // Playback interval effect (auto-pauses inside the timer callback at the final step)
   useEffect(() => {
     if (!isPlaying) return;
 
     const id = setInterval(() => {
-      setIndex((i) => Math.min(i + 1, lastIndex));
+      setIndex((i) => {
+        const nextIdx = i + 1;
+        if (nextIdx >= lastIndex) {
+          setIsPlaying(false);
+          return lastIndex;
+        }
+        return nextIdx;
+      });
     }, delay);
 
     return () => clearInterval(id);
   }, [isPlaying, delay, lastIndex]);
-
-  // Auto-pause effect when reaching the final step
-  useEffect(() => {
-    if (index >= lastIndex) {
-      setIsPlaying(false);
-    }
-  }, [index, lastIndex]);
 
   return {
     index,
