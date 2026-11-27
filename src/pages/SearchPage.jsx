@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { SEARCH_ALGORITHMS } from '../algorithms';
+import { SEARCH_ALGORITHMS } from "../algorithms/searching";
 import { complexity } from '../data/complexity';
 import { generateArray } from '../utils/array';
 import { usePlayer } from '../hooks/usePlayer';

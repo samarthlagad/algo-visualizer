@@ -1,4 +1,4 @@
-import { QUEUE_CAPACITY } from '../algorithms/queue';
+import { QUEUE_CAPACITY } from "../dataStructures/queue";
 
 export default function QueueView({ state }) {
   const { items, highlight, action, removedValue, error } = state;

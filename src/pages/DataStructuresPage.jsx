@@ -1,16 +1,6 @@
 import { useState } from 'react';
-import {
-  createInitialStack,
-  push,
-  pop,
-  peek,
-} from '../algorithms/stack';
-import {
-  createInitialQueue,
-  enqueue,
-  dequeue,
-  front,
-} from '../algorithms/queue';
+import { createInitialStack, push, pop, peek } from "../dataStructures/stack";
+import { createInitialQueue, enqueue, dequeue, front } from "../dataStructures/queue";
 import { complexity } from '../data/complexity';
 import StackView from '../components/StackView';
 import QueueView from '../components/QueueView';

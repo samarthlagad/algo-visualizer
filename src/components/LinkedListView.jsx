@@ -1,4 +1,4 @@
-import { LINKED_LIST_CAPACITY } from '../algorithms/linkedList';
+import { LINKED_LIST_CAPACITY } from "../dataStructures/linkedList";
 
 export default function LinkedListView({ step }) {
   const { items = [], current = null, target = null, error = false } = step;

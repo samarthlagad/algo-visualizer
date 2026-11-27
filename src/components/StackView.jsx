@@ -1,4 +1,4 @@
-import { STACK_CAPACITY } from '../algorithms/stack';
+import { STACK_CAPACITY } from "../dataStructures/stack";
 
 export default function StackView({ state }) {
   const { items, highlight, action, removedValue, error } = state;
