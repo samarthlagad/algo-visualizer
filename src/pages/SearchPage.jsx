@@ -27,13 +27,11 @@ function getSearchStatusLabel(step, target, isValidTarget) {
 function SearchVisualizer({
   arr,
   size,
-  targetInput,
   parsedTarget,
   isValidTarget,
-  onTargetChange,
-  onPickFromArray,
   onGenerate,
   onSizeChange,
+  onPlayingChange,
 }) {
   const info = complexity.linear;
 
@@ -56,6 +54,22 @@ function SearchVisualizer({
 
   const { index, isPlaying, delay, next, prev, reset, togglePlay, setDelay } =
     usePlayer(steps.length);
+
+  // Keep parent informed if you want to disable inputs during playback
+  const handleToggle = () => {
+    onPlayingChange?.(!isPlaying);
+    togglePlay();
+  };
+
+  const handleReset = () => {
+    onPlayingChange?.(false);
+    reset();
+  };
+
+  const handlePrev = () => {
+    onPlayingChange?.(false);
+    prev();
+  };
 
   const step = steps[index];
 
@@ -87,37 +101,19 @@ function SearchVisualizer({
       {/* Search Bars */}
       <SearchBars step={step} />
 
-      {/* Target Input & Pick From Array Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-900/70 p-3">
-        <div className="flex flex-wrap items-center gap-3">
-          <label className="flex items-center gap-2 text-sm text-slate-300">
-            <span>Target:</span>
-            <input
-              type="number"
-              value={targetInput}
-              disabled={isPlaying}
-              placeholder="e.g. 42"
-              onChange={(e) => onTargetChange(e.target.value)}
-              className="w-24 rounded bg-slate-950 px-3 py-1.5 font-mono text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-emerald-500 disabled:opacity-50"
-            />
-          </label>
-
-          <Button onClick={onPickFromArray} disabled={isPlaying}>
-            Pick from array
-          </Button>
-        </div>
-
-        <p
-          className={`text-sm font-medium ${
+      {/* Result Summary Banner */}
+      <div className="rounded-lg bg-slate-900/60 px-4 py-2 text-center text-sm font-medium">
+        <span
+          className={
             !isValidTarget
               ? 'text-slate-400'
               : lastStep.found !== null
                 ? 'text-emerald-400'
                 : 'text-rose-400'
-          }`}
+          }
         >
           {resultSummary}
-        </p>
+        </span>
       </div>
 
       {/* Shared Player Controls + Array Controls */}
@@ -126,10 +122,10 @@ function SearchVisualizer({
         index={index}
         total={steps.length}
         delay={delay}
-        onToggle={togglePlay}
-        onPrev={prev}
+        onToggle={handleToggle}
+        onPrev={handlePrev}
         onNext={next}
-        onReset={reset}
+        onReset={handleReset}
         onDelayChange={setDelay}
       >
         <Button onClick={onGenerate} disabled={isPlaying}>
@@ -161,6 +157,7 @@ export default function SearchPage() {
   const [arr, setArr] = useState(() => generateArray(12));
   const [arrayId, setArrayId] = useState(0);
   const [targetInput, setTargetInput] = useState(() => String(arr[0]));
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const trimmed = targetInput.trim();
   const parsedTarget = trimmed === '' ? NaN : Number(trimmed);
@@ -173,6 +170,7 @@ export default function SearchPage() {
 
   const handleGenerate = () => {
     const nextArr = generateArray(size);
+    setIsPlaying(false);
     setArr(nextArr);
     setTargetInput(pickRandomFrom(nextArr));
     setArrayId((id) => id + 1);
@@ -180,6 +178,7 @@ export default function SearchPage() {
 
   const handleSizeChange = (newSize) => {
     const nextArr = generateArray(newSize);
+    setIsPlaying(false);
     setSize(newSize);
     setArr(nextArr);
     setTargetInput(pickRandomFrom(nextArr));
@@ -187,21 +186,54 @@ export default function SearchPage() {
   };
 
   const handlePickFromArray = () => {
+    setIsPlaying(false);
     setTargetInput(pickRandomFrom(arr));
   };
 
+  const handleTargetChange = (value) => {
+    setIsPlaying(false);
+    setTargetInput(value);
+  };
+
   return (
-    <SearchVisualizer
-      key={`${arrayId}-${isValidTarget ? parsedTarget : 'empty'}`}
-      arr={arr}
-      size={size}
-      targetInput={targetInput}
-      parsedTarget={parsedTarget}
-      isValidTarget={isValidTarget}
-      onTargetChange={setTargetInput}
-      onPickFromArray={handlePickFromArray}
-      onGenerate={handleGenerate}
-      onSizeChange={handleSizeChange}
-    />
+    <div className="space-y-4">
+      {/* Target Controls live OUTSIDE the keyed visualizer so input never loses focus */}
+      <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg bg-slate-900/70 p-3">
+        <div className="flex flex-wrap items-center gap-3">
+          <label className="flex items-center gap-2 text-sm text-slate-300">
+            <span>Target:</span>
+            <input
+              type="number"
+              value={targetInput}
+              disabled={isPlaying}
+              placeholder="e.g. 42"
+              onChange={(e) => handleTargetChange(e.target.value)}
+              className="w-24 rounded bg-slate-950 px-3 py-1.5 font-mono text-sm text-white ring-1 ring-slate-700 focus:outline-none focus:ring-emerald-500 disabled:opacity-50"
+            />
+          </label>
+
+          <Button onClick={handlePickFromArray} disabled={isPlaying}>
+            Pick from array
+          </Button>
+        </div>
+
+        <span className="text-xs text-slate-400">
+          {isValidTarget
+            ? `Searching for ${parsedTarget}`
+            : 'Type a number or pick from array'}
+        </span>
+      </div>
+
+      <SearchVisualizer
+        key={`${arrayId}-${isValidTarget ? parsedTarget : 'empty'}`}
+        arr={arr}
+        size={size}
+        parsedTarget={parsedTarget}
+        isValidTarget={isValidTarget}
+        onGenerate={handleGenerate}
+        onSizeChange={handleSizeChange}
+        onPlayingChange={setIsPlaying}
+      />
+    </div>
   );
 }
