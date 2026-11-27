@@ -49,4 +49,13 @@ export const complexity = {
     description:
       'Picks a pivot element, partitions smaller values to its left and larger values to its right, then recurses on both sides. Very fast in practice, though a last-element pivot degrades to O(n²) on already-sorted input.',
   },
+  linear: {
+    name: 'Linear Search',
+    best: 'O(1)',
+    average: 'O(n)',
+    worst: 'O(n)',
+    space: 'O(1)',
+    description:
+      'Checks each element sequentially from left to right until it matches the target or reaches the end of the array. Stops immediately at the first matching index when duplicates are present.',
+  },
 };

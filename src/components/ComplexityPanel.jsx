@@ -6,22 +6,24 @@ export default function ComplexityPanel({ info }) {
     { label: 'Average', value: info.average },
     { label: 'Worst', value: info.worst },
     { label: 'Space', value: info.space },
-  ];
+  ].filter((m) => m.value !== undefined);
 
   return (
     <section className="rounded-lg border border-slate-800 bg-slate-900 p-4 text-slate-200">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h2 className="text-lg font-semibold text-white">Complexity</h2>
 
-        <span
-          className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
-            info.stable
-              ? 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
-              : 'bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/30'
-          }`}
-        >
-          Stable: {info.stable ? 'Yes' : 'No'}
-        </span>
+        {typeof info.stable === 'boolean' && (
+          <span
+            className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${
+              info.stable
+                ? 'bg-emerald-500/15 text-emerald-400 ring-1 ring-emerald-500/30'
+                : 'bg-rose-500/15 text-rose-400 ring-1 ring-rose-500/30'
+            }`}
+          >
+            Stable: {info.stable ? 'Yes' : 'No'}
+          </span>
+        )}
       </div>
 
       <div className="mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
