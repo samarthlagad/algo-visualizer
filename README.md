@@ -3,15 +3,14 @@
 An interactive web app for visualizing sorting, searching, data structure
 and graph algorithms step by step. Built with React and Tailwind CSS.
 
-## Planned Features
-
-- Sorting: Bubble, Selection, Insertion, Merge, Quick
-- Searching: Linear, Binary
-- Linked list, stack and queue operations
-- Tree traversals: inorder, preorder, postorder
-- Graph algorithms: BFS and DFS on a user-built graph
-- Step-by-step playback with speed controls
-- Time and space complexity explanations
+## Features
+- [x] Sorting: Bubble, Selection, Insertion, Merge, Quick
+- [x] Step-by-step playback, speed and size controls
+- [x] Time and space complexity panel
+- [ ] Searching: Linear, Binary
+- [ ] Linked list, stack and queue
+- [ ] Tree traversals
+- [ ] Graph BFS/DFS on a user-built graph
 
 ## Tech Stack
 
