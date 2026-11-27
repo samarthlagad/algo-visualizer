@@ -58,4 +58,13 @@ export const complexity = {
     description:
       'Checks each element sequentially from left to right until it matches the target or reaches the end of the array. Stops immediately at the first matching index when duplicates are present.',
   },
+  binary: {
+    name: 'Binary Search',
+    best: 'O(1)',
+    average: 'O(log n)',
+    worst: 'O(log n)',
+    space: 'O(1)',
+    description:
+      'Repeatedly inspects the middle element of a sorted array and discards the half where the target cannot lie. Cuts the remaining search space in half on every comparison, requiring at most ⌊log₂(n)⌋ + 1 checks.',
+  },
 };

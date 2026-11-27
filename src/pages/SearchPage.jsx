@@ -1,5 +1,5 @@
 import { useState, useMemo } from 'react';
-import { getLinearSearchSteps } from '../algorithms/linearSearch';
+import { SEARCH_ALGORITHMS } from '../algorithms';
 import { complexity } from '../data/complexity';
 import { generateArray } from '../utils/array';
 import { usePlayer } from '../hooks/usePlayer';
@@ -8,12 +8,25 @@ import Button from '../components/Button';
 import PlayerControls from '../components/PlayerControls';
 import ComplexityPanel from '../components/ComplexityPanel';
 
-function getSearchStatusLabel(step, target, isValidTarget) {
+function createSearchArray(size, algo) {
+  const raw = generateArray(size);
+  return algo === 'binary' ? [...raw].sort((a, b) => a - b) : raw;
+}
+
+function getSearchStatusLabel(step, target, isValidTarget, algo) {
   if (!isValidTarget) return 'Enter a target number to begin';
   if (!step) return '';
 
+  const rangeText =
+    algo === 'binary' && step.low !== null && step.high !== null
+      ? ` — range [${step.low}, ${step.high}]`
+      : '';
+
   if (step.found !== null) {
     return `Found ${target} at index ${step.found}!`;
+  }
+  if (step.mid !== null) {
+    return `Checking mid index ${step.mid} (value ${step.array[step.mid]}) against ${target}${rangeText}`;
   }
   if (step.current !== null) {
     return `Checking index ${step.current} (value ${step.array[step.current]}) against ${target}`;
@@ -21,19 +34,24 @@ function getSearchStatusLabel(step, target, isValidTarget) {
   if (step.eliminated.length === step.array.length && step.array.length > 0) {
     return `${target} not found in array`;
   }
+  if (rangeText) {
+    return `Searching for ${target}${rangeText}`;
+  }
   return `Ready to search for ${target}`;
 }
 
 function SearchVisualizer({
+  algo,
   arr,
   size,
   parsedTarget,
   isValidTarget,
+  onAlgoChange,
   onGenerate,
   onSizeChange,
   onPlayingChange,
 }) {
-  const info = complexity.linear;
+  const info = complexity[algo];
 
   const steps = useMemo(() => {
     if (!isValidTarget) {
@@ -49,13 +67,13 @@ function SearchVisualizer({
         },
       ];
     }
-    return getLinearSearchSteps(arr, parsedTarget);
-  }, [arr, parsedTarget, isValidTarget]);
+    const searchFn = SEARCH_ALGORITHMS[algo] || SEARCH_ALGORITHMS.linear;
+    return searchFn(arr, parsedTarget);
+  }, [algo, arr, parsedTarget, isValidTarget]);
 
   const { index, isPlaying, delay, next, prev, reset, togglePlay, setDelay } =
     usePlayer(steps.length);
 
-  // Keep parent informed if you want to disable inputs during playback
   const handleToggle = () => {
     onPlayingChange?.(!isPlaying);
     togglePlay();
@@ -84,18 +102,40 @@ function SearchVisualizer({
 
   return (
     <div className="space-y-5">
-      {/* Header & Step Counter */}
+      {/* Header, Algorithm Selector & Step Counter */}
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-slate-100">{info.name}</h1>
+          <div className="flex flex-wrap items-center gap-2.5">
+            <h1 className="text-2xl font-bold text-slate-100">{info.name}</h1>
+            {algo === 'binary' && (
+              <span className="rounded-full bg-sky-500/15 px-2.5 py-0.5 text-xs font-medium text-sky-300 ring-1 ring-sky-500/30">
+                Sorted array required
+              </span>
+            )}
+          </div>
           <p className="text-sm text-slate-400">
-            {getSearchStatusLabel(step, parsedTarget, isValidTarget)}
+            {getSearchStatusLabel(step, parsedTarget, isValidTarget, algo)}
           </p>
         </div>
 
-        <span className="rounded bg-slate-900 px-3 py-1 font-mono text-sm text-slate-300">
-          Step {index + 1} / {steps.length}
-        </span>
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={algo}
+            disabled={isPlaying}
+            onChange={(e) => onAlgoChange(e.target.value)}
+            className="rounded bg-slate-900 px-3 py-1.5 text-sm text-slate-200 ring-1 ring-slate-700 focus:outline-none focus:ring-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {Object.keys(SEARCH_ALGORITHMS).map((key) => (
+              <option key={key} value={key}>
+                {complexity[key].name}
+              </option>
+            ))}
+          </select>
+
+          <span className="rounded bg-slate-900 px-3 py-1 font-mono text-sm text-slate-300">
+            Step {index + 1} / {steps.length}
+          </span>
+        </div>
       </div>
 
       {/* Search Bars */}
@@ -129,7 +169,7 @@ function SearchVisualizer({
         onDelayChange={setDelay}
       >
         <Button onClick={onGenerate} disabled={isPlaying}>
-          New Array
+          {algo === 'binary' ? 'New Sorted Array' : 'New Array'}
         </Button>
 
         <label className="ml-2 flex items-center gap-2 text-sm text-slate-300">
@@ -153,8 +193,9 @@ function SearchVisualizer({
 }
 
 export default function SearchPage() {
+  const [algo, setAlgo] = useState('linear');
   const [size, setSize] = useState(12);
-  const [arr, setArr] = useState(() => generateArray(12));
+  const [arr, setArr] = useState(() => createSearchArray(12, 'linear'));
   const [arrayId, setArrayId] = useState(0);
   const [targetInput, setTargetInput] = useState(() => String(arr[0]));
   const [isPlaying, setIsPlaying] = useState(false);
@@ -168,8 +209,17 @@ export default function SearchPage() {
     return String(list[Math.floor(Math.random() * list.length)]);
   };
 
+  const handleAlgoChange = (nextAlgo) => {
+    const nextArr = createSearchArray(size, nextAlgo);
+    setIsPlaying(false);
+    setAlgo(nextAlgo);
+    setArr(nextArr);
+    setTargetInput(pickRandomFrom(nextArr));
+    setArrayId((id) => id + 1);
+  };
+
   const handleGenerate = () => {
-    const nextArr = generateArray(size);
+    const nextArr = createSearchArray(size, algo);
     setIsPlaying(false);
     setArr(nextArr);
     setTargetInput(pickRandomFrom(nextArr));
@@ -177,7 +227,7 @@ export default function SearchPage() {
   };
 
   const handleSizeChange = (newSize) => {
-    const nextArr = generateArray(newSize);
+    const nextArr = createSearchArray(newSize, algo);
     setIsPlaying(false);
     setSize(newSize);
     setArr(nextArr);
@@ -218,18 +268,22 @@ export default function SearchPage() {
         </div>
 
         <span className="text-xs text-slate-400">
-          {isValidTarget
-            ? `Searching for ${parsedTarget}`
-            : 'Type a number or pick from array'}
+          {algo === 'binary'
+            ? 'Array is generated in ascending order for binary search'
+            : isValidTarget
+              ? `Searching for ${parsedTarget}`
+              : 'Type a number or pick from array'}
         </span>
       </div>
 
       <SearchVisualizer
-        key={`${arrayId}-${isValidTarget ? parsedTarget : 'empty'}`}
+        key={`${algo}-${arrayId}-${isValidTarget ? parsedTarget : 'empty'}`}
+        algo={algo}
         arr={arr}
         size={size}
         parsedTarget={parsedTarget}
         isValidTarget={isValidTarget}
+        onAlgoChange={handleAlgoChange}
         onGenerate={handleGenerate}
         onSizeChange={handleSizeChange}
         onPlayingChange={setIsPlaying}
