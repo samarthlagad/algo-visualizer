@@ -1,26 +1,8 @@
 function getColor(i, step) {
-  if (Array.isArray(step.swapped) && step.swapped.includes(i)) {
-    return 'bg-red-500';
-  }
-  if (step.swapped === true && step.comparing?.includes(i)) {
-    return 'bg-red-500';
-  }
-
-  if (step.comparing?.includes(i)) {
-    return 'bg-yellow-400';
-  }
-
-  if (step.pivot === i) {
-    return 'bg-purple-500';
-  }
-
-  if (Array.isArray(step.sorted) && step.sorted.includes(i)) {
-    return 'bg-green-500';
-  }
-  if (typeof step.sortedFrom === 'number' && i >= step.sortedFrom) {
-    return 'bg-green-500';
-  }
-
+  if (step.swapped?.includes(i)) return 'bg-red-500';
+  if (step.comparing?.includes(i)) return 'bg-yellow-400';
+  if (step.pivot === i) return 'bg-purple-500';
+  if (step.sorted?.includes(i)) return 'bg-green-500';
   if (
     step.range?.[0] !== undefined &&
     i >= step.range[0] &&
@@ -28,19 +10,29 @@ function getColor(i, step) {
   ) {
     return 'bg-sky-300';
   }
-
   return 'bg-slate-500';
 }
 
-export default function Bars({ step }) {
+function getCaption(step, algo) {
+  if (step.range?.[0] !== undefined) {
+    const prefix =
+      step.pivot !== null && step.pivot !== undefined
+        ? 'Partitioning indices'
+        : 'Merging indices';
+    return `${prefix} ${step.range[0]} to ${step.range[1]}`;
+  }
+  if (algo === 'insertion') {
+    return 'Green bars are sorted relative to each other, not yet in final position';
+  }
+  return '';
+}
+
+export default function Bars({ step, algo }) {
   if (!step) return null;
 
   const max = Math.max(...step.array, 1);
   const gapClass = step.array.length > 25 ? 'gap-px' : 'gap-1';
-  const hasRange = step.range?.[0] !== undefined;
-  const labelPrefix = step.pivot !== null && step.pivot !== undefined
-    ? 'Partitioning indices'
-    : 'Merging indices';
+  const caption = getCaption(step, algo);
 
   return (
     <div className="w-full">
@@ -57,9 +49,7 @@ export default function Bars({ step }) {
         ))}
       </div>
 
-      <p className="mt-2 h-5 text-center text-sm text-slate-400">
-        {hasRange ? `${labelPrefix} ${step.range[0]} to ${step.range[1]}` : ''}
-      </p>
+      <p className="mt-2 h-5 text-center text-sm text-slate-400">{caption}</p>
     </div>
   );
 }

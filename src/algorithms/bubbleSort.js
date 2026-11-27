@@ -1,8 +1,15 @@
 export function getBubbleSortSteps(input) {
   const arr = [...input];
   const steps = [];
+  const sorted = [];
   const n = arr.length;
-  let sortedFrom = n;
+
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    swapped: [],
+    sorted: [],
+  });
 
   for (let i = 0; i < n - 1; i++) {
     let didSwap = false;
@@ -11,24 +18,24 @@ export function getBubbleSortSteps(input) {
       steps.push({
         array: [...arr],
         comparing: [j, j + 1],
-        swapped: false,
-        sortedFrom,
+        swapped: [],
+        sorted: [...sorted],
       });
 
-      if (arr[j] > arr[j + 1]) {
+       if (arr[j] > arr[j + 1]) {
         [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
         didSwap = true;
 
         steps.push({
           array: [...arr],
-          comparing: [j, j + 1],
-          swapped: true,
-          sortedFrom,
+          comparing: [],
+          swapped: [j, j + 1],
+          sorted: [...sorted],
         });
       }
     }
 
-    sortedFrom = n - 1 - i;
+    sorted.push(n - 1 - i);
 
     if (!didSwap) {
       break;
@@ -38,8 +45,8 @@ export function getBubbleSortSteps(input) {
   steps.push({
     array: [...arr],
     comparing: [],
-    swapped: false,
-    sortedFrom: 0,
+    swapped: [],
+    sorted: Array.from({ length: n }, (_, idx) => idx),
   });
 
   return steps;

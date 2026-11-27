@@ -4,6 +4,13 @@ export function getSelectionSortSteps(input) {
   const sorted = [];
   const n = arr.length;
 
+  steps.push({
+    array: [...arr],
+    comparing: [],
+    swapped: [],
+    sorted: [],
+  });
+
   for (let i = 0; i < n - 1; i++) {
     let minIdx = i;
 
@@ -11,7 +18,7 @@ export function getSelectionSortSteps(input) {
       steps.push({
         array: [...arr],
         comparing: [minIdx, j],
-        swapped: false,
+        swapped: [],
         sorted: [...sorted],
       });
 
@@ -24,8 +31,8 @@ export function getSelectionSortSteps(input) {
       [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
       steps.push({
         array: [...arr],
-        comparing: [i, minIdx],
-        swapped: true,
+        comparing: [],
+        swapped: [i, minIdx],
         sorted: [...sorted],
       });
     }
@@ -33,13 +40,11 @@ export function getSelectionSortSteps(input) {
     sorted.push(i);
   }
 
-  if (n > 0) sorted.push(n - 1);
-
   steps.push({
     array: [...arr],
     comparing: [],
-    swapped: false,
-    sorted: [...sorted],
+    swapped: [],
+    sorted: Array.from({ length: n }, (_, idx) => idx),
   });
 
   return steps;

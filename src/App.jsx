@@ -13,35 +13,28 @@ function getStepLabel(step) {
   if (!step) return '';
 
   const isAllSorted =
-    (step.sortedFrom === 0 && step.comparing?.length === 0) ||
-    (Array.isArray(step.sorted) &&
-      step.sorted.length === step.array.length &&
-      step.array.length > 0 &&
-      step.comparing?.length === 0 &&
-      (!Array.isArray(step.swapped) || step.swapped.length === 0));
+    step.array.length > 0 &&
+    step.sorted?.length === step.array.length &&
+    step.comparing?.length === 0 &&
+    step.swapped?.length === 0;
 
   if (isAllSorted) {
     return 'Array sorted!';
   }
 
-  // Newer algorithms (Insertion, Merge, Quick) emit swapped as [i, j] or [k]
-  if (Array.isArray(step.swapped) && step.swapped.length > 0) {
-    if (step.swapped.length === 2) {
-      const [a, b] = step.swapped;
-      return `Swapped ${step.array[a]} and ${step.array[b]}`;
-    }
+  if (step.swapped?.length === 2) {
+    const [a, b] = step.swapped;
+    return `Swapped ${step.array[a]} and ${step.array[b]}`;
+  }
+
+  if (step.swapped?.length === 1) {
     const [k] = step.swapped;
     return `Wrote ${step.array[k]} at index ${k}`;
   }
 
-  // Older algorithms (Bubble, Selection) emit swapped: true alongside comparing: [a, b]
   if (step.comparing?.length === 2) {
     const [a, b] = step.comparing;
-    const valA = step.array[a];
-    const valB = step.array[b];
-    return step.swapped === true
-      ? `Swapped ${valA} and ${valB}`
-      : `Comparing ${valA} and ${valB}`;
+    return `Comparing ${step.array[a]} and ${step.array[b]}`;
   }
 
   if (step.pivot !== null && step.pivot !== undefined) {
@@ -66,18 +59,14 @@ function Visualizer({
     return sortFn(arr);
   }, [algo, arr]);
 
-  const stats = useMemo(() => {
-    const comparisons = steps.filter((s) => s.comparing?.length > 0).length;
-    const swaps = steps.filter((s) =>
-      Array.isArray(s.swapped) ? s.swapped.length > 0 : Boolean(s.swapped)
-    ).length;
-
-    return {
+  const stats = useMemo(
+    () => ({
       total: steps.length,
-      comparisons,
-      swaps,
-    };
-  }, [steps]);
+      comparisons: steps.filter((s) => s.comparing.length > 0).length,
+      swaps: steps.filter((s) => s.swapped.length > 0).length,
+    }),
+    [steps]
+  );
 
   const { index, isPlaying, delay, next, prev, reset, togglePlay, setDelay } =
     usePlayer(steps.length);
@@ -116,7 +105,7 @@ function Visualizer({
       </div>
 
       {/* Bars */}
-      <Bars step={step} />
+      <Bars step={step} algo={algo} />
 
       {/* Live Stats Line */}
       <div className="flex flex-wrap items-center justify-center gap-6 rounded-lg bg-slate-900/60 px-4 py-2 text-xs text-slate-400 sm:text-sm">
@@ -138,7 +127,6 @@ function Visualizer({
 
       {/* Controls */}
       <div className="flex flex-wrap items-center justify-between gap-4 rounded-lg bg-slate-900 p-4">
-        {/* Playback buttons */}
         <div className="flex flex-wrap items-center gap-2">
           <Button variant="primary" onClick={togglePlay} className="w-20">
             {isPlaying ? 'Pause' : 'Play'}
@@ -155,7 +143,6 @@ function Visualizer({
           </Button>
         </div>
 
-        {/* Sliders */}
         <div className="flex flex-wrap items-center gap-5">
           <label className="flex items-center gap-2.5 text-sm text-slate-300">
             <span>Size: {size}</span>
